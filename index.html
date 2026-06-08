@@ -8,22 +8,23 @@
 <style>
 body{
     font-family: Arial, sans-serif;
-    background:#f5f5f5;
+    background-color:#f4f6f8;
     margin:0;
     padding:30px;
 }
 
 .container{
-    max-width:700px;
+    max-width:800px;
     margin:auto;
     background:white;
-    padding:25px;
+    padding:30px;
     border-radius:15px;
     box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
 h1{
     text-align:center;
+    color:#333;
 }
 
 label{
@@ -38,21 +39,32 @@ input, select{
     margin-top:5px;
     border:1px solid #ccc;
     border-radius:5px;
+    box-sizing:border-box;
 }
 
 button{
     width:100%;
-    margin-top:20px;
     padding:12px;
+    margin-top:20px;
+    border:none;
+    border-radius:5px;
     font-size:16px;
     cursor:pointer;
 }
 
+button:hover{
+    opacity:0.9;
+}
+
 .result{
-    margin-top:20px;
-    padding:15px;
+    margin-top:25px;
+    padding:20px;
     background:#eef6ff;
     border-radius:10px;
+}
+
+ul{
+    padding-left:20px;
 }
 </style>
 </head>
@@ -68,8 +80,12 @@ button{
 
 <label>보관 장소</label>
 <select id="place">
+    <option value="medicinebox">약 보관함</option>
     <option value="drawer">서랍</option>
+    <option value="desk">책상 위</option>
+    <option value="bag">가방 안</option>
     <option value="fridge">냉장고</option>
+    <option value="kitchen">주방</option>
     <option value="bathroom">화장실</option>
     <option value="car">차량 내부</option>
 </select>
@@ -79,7 +95,9 @@ button{
 
 <button onclick="checkMedicine()">진단하기</button>
 
-<div id="result" class="result"></div>
+<div id="result" class="result">
+    진단 결과가 여기에 표시됩니다.
+</div>
 
 </div>
 
@@ -91,38 +109,67 @@ function checkMedicine(){
     let place = document.getElementById("place").value;
     let temp = Number(document.getElementById("temp").value);
 
+    if(medicine.trim() === ""){
+        alert("약 이름을 입력해주세요.");
+        return;
+    }
+
+    if(document.getElementById("temp").value === ""){
+        alert("온도를 입력해주세요.");
+        return;
+    }
+
     let score = 100;
 
-    if(place === "bathroom") score -= 20;
+    if(place === "medicinebox") score -= 0;
+    if(place === "drawer") score -= 5;
+    if(place === "desk") score -= 10;
+    if(place === "bag") score -= 15;
+    if(place === "fridge") score -= 10;
+    if(place === "kitchen") score -= 20;
+    if(place === "bathroom") score -= 25;
     if(place === "car") score -= 40;
 
     if(temp > 30) score -= 30;
     if(temp < 1) score -= 20;
 
+    if(score < 0){
+        score = 0;
+    }
+
     let resultText = "";
 
     if(score >= 80){
-        resultText = "✅ 적절한 보관 환경입니다.";
+        resultText = "적절한 보관 환경입니다.";
     }
     else if(score >= 50){
-        resultText = "⚠ 보관 환경을 확인해 보세요.";
+        resultText = "보관 환경을 점검해 보세요.";
     }
     else{
-        resultText = "🚨 약품 품질 저하 위험이 있습니다.";
+        resultText = "약품 품질 저하 위험이 있습니다.";
     }
 
     document.getElementById("result").innerHTML =
+
     "<h2>진단 결과</h2>" +
+
     "<p><b>약 이름:</b> " + medicine + "</p>" +
+
     "<p><b>안전도:</b> " + score + "점</p>" +
+
     "<p><b>평가:</b> " + resultText + "</p>" +
+
     "<hr>" +
-    "<h3>권장 사항</h3>" +
+
+    "<h3>📌 권장 사항</h3>" +
+
     "<ul>" +
     "<li>직사광선을 피하세요.</li>" +
+    "<li>어린이의 손이 닿지 않는 곳에 보관하세요.</li>" +
     "<li>제품 설명서의 보관 방법을 확인하세요.</li>" +
     "<li>고온의 차량 내부 보관은 피하세요.</li>" +
-    "<li>습기가 많은 화장실 보관은 피하는 것이 좋습니다.</li>" +
+    "<li>습기가 많은 화장실과 주방 보관은 피하는 것이 좋습니다.</li>" +
+    "<li>가능하면 약 보관함이나 서늘한 서랍에 보관하세요.</li>" +
     "</ul>";
 }
 
